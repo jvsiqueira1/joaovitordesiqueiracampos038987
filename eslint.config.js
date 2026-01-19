@@ -24,19 +24,23 @@ export default tseslint.config(
   prettier,
 
   {
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: globals.browser,
       parserOptions: {
-        project: true,
+        project: ["./tsconfig.app.json", "./tsconfig.node.json"],
         tsconfigRootDir: __dirname,
       },
     },
     settings: {
       react: { version: "detect" },
       "import/resolver": {
-        typescript: { project: true },
+        typescript: { 
+          project: ["./tsconfig.app.json", "./tsconfig.node.json"],
+        },
+        node: true,
       },
     },
     plugins: {
