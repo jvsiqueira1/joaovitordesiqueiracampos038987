@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -8,7 +8,6 @@ function isRecord(value: unknown): value is UnknownRecord {
 
 function pickMessage(data: unknown): string | undefined {
     if (typeof data === "string") return data;
-
     if (isRecord(data)) {
         const m = data["message"];
         const e = data["error"];
@@ -22,12 +21,14 @@ function pickMessage(data: unknown): string | undefined {
 export class ApiError extends Error {
     readonly status?: number;
     readonly details?: unknown;
+    readonly cause?: unknown;
 
     constructor(message: string, opts?: { status?: number; details?: unknown; cause?: unknown }) {
-        super(message, opts ? { cause: opts.cause } : undefined);
+        super(message);
         this.name = "ApiError";
         this.status = opts?.status;
         this.details = opts?.details;
+        this.cause = opts?.cause;
     }
 }
 
