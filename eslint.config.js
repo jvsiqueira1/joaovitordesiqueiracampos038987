@@ -30,7 +30,7 @@ export default tseslint.config(
       sourceType: "module",
       globals: globals.browser,
       parserOptions: {
-        project: ["./tsconfig.app.json", "./tsconfig.node.json"],
+        project: ["./tsconfig.eslint.json"],
         tsconfigRootDir: __dirname,
       },
     },
@@ -38,7 +38,7 @@ export default tseslint.config(
       react: { version: "detect" },
       "import/resolver": {
         typescript: { 
-          project: ["./tsconfig.app.json", "./tsconfig.node.json"],
+          project: ["./tsconfig.eslint.json"],
         },
         node: true,
       },
