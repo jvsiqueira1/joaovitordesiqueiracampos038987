@@ -1,11 +1,10 @@
-import type { Pet, PetId, PetUpsertInput } from "./pets.models";
+import type { Pet, PetId, PetPhoto, PetUpsertInput } from "./pets.models";
 import type { AxiosResponse } from "axios";
 
 import { ApiError } from "@/core/api/apiError";
 import { http } from "@/core/api/http";
 import type { Page, PageRequest } from "@/core/api/pagination";
 import { parsePage } from "@/core/api/parsePage";
-
 
 const PETS_QUERY = {
     page: "page",
@@ -31,6 +30,19 @@ function asId(value: unknown): PetId | undefined {
     return undefined;
 }
 
+function toPhoto(value: unknown): PetPhoto | undefined {
+    if (!isRecord(value)) return undefined;
+
+    const id = asId(value["id"]);
+    const nome = asString(value["nome"]);
+    const contentType = asString(value["contentType"]);
+    const url = asString(value["url"]);
+
+    if (!id || !nome || !contentType || !url) return undefined;
+
+    return { id, nome, contentType, url };
+}
+
 function toPet(dto: unknown): Pet {
     if (!isRecord(dto)) {
         throw new ApiError("Resposta inválida ao converter Pet.")
@@ -38,10 +50,9 @@ function toPet(dto: unknown): Pet {
 
     const id = asId(dto["id"]);
     const nome = asString(dto["nome"]);
-    const especie = asString(dto["especie"]);
     const idade = asNumber(dto["idade"]);
 
-    if (!id || !nome || !especie || idade === undefined) {
+    if (!id || !nome || idade === undefined) {
         throw new ApiError("Resposta inválida: Pet sem campos obrigatórios.", {
             details: dto,
         });
@@ -50,11 +61,10 @@ function toPet(dto: unknown): Pet {
     return {
         id,
         nome,
-        especie,
         idade,
         raca: asString(dto["raca"]),
         tutorId: asId(dto["tutorId"]),
-        fotoUrl: asString(dto['fotoUrl']) ?? asString(dto["foto"])
+        foto: toPhoto(dto["foto"]),
     }
 }
 
@@ -131,4 +141,8 @@ export async function uploadPetPhoto(id: PetId, file: File, fieldName: string = 
     await http.post(`/v1/pets/${id}/fotos`, form, {
         headers: { "Content-Type": "multipart/form-data" },
     });
+}
+
+export async function removePetPhoto(id: PetId, fotoId: string): Promise<void> {
+    await http.delete(`/v1/pets/${id}/fotos/${fotoId}`);
 }

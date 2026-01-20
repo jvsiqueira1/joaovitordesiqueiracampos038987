@@ -57,15 +57,15 @@ export default function PetsListPage() {
                         <div key={p.id} className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
                             <div className="flex items-start gap-3">
                                 <div className="h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40">
-                                    {p.fotoUrl ? (
-                                        <img src={p.fotoUrl} alt={p.nome} className="h-full w-full object-cover" />
+                                    {p.foto?.url ? (
+                                        <img src={p.foto.url} alt={p.nome} className="h-full w-full object-cover" />
                                     ) : null}
                                 </div>
 
                                 <div className="min-w-0">
                                     <div className="truncate text-base font-semibold">{p.nome}</div>
                                     <div className="text=sm text-zinc-300">
-                                        {p.especie} - {p.idade} anos
+                                        {p.idade} anos
                                     </div>
                                     {p.tutorId ? <div className="text-xs text-zinc-400">Tutor: {p.tutorId}</div> : null}
                                 </div>
