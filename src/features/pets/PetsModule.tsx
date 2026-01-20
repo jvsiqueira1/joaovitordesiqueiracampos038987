@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import PetDetailPage from "./pages/PetDetailPage";
+import PetFormPage from "./pages/PetFormPage";
 import PetsListPage from "./pages/PetsListPage";
 
 export default function PetsModule() {
