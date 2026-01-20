@@ -9,16 +9,6 @@ export const http = axios.create({
     timeout: 20_000,
 })
 
-http.interceptors.request.use((config) => {
-    const token = localStorage.getItem("access_token");
-
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    
-    return config;
-});
-
 http.interceptors.response.use(
     (res) => res,
     (err) => Promise.reject(toApiError(err)),
