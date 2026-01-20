@@ -36,17 +36,23 @@ export default function PetsListPage() {
                     </p>
                 </div>
 
+                <div className="flex w-full gap-3 sm:w-auto sm:items-end">
+                    <div className="w-full sm:w-80">
+                        <label className="block text-sm text-zinc-200">Buscar por nome</label>
+                        <input
+                            className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none"
+                            value={query} onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Ex: Bob"
+                        />
+                    </div>
+                </div>
+
                 <Link
                     to="/pets/new"
-                    className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900"
+                    className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 flex items-center justify-center"
                 >
                     Novo pet
                 </Link>
-
-                <div className="w-full sm:w-80">
-                    <label className="block text-sm text-zinc-200">Buscar por nome</label>
-                    <input className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ex: Bob" />
-                </div>
             </div>
 
             {state.error && (
@@ -62,28 +68,34 @@ export default function PetsListPage() {
             ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {state.items.map((p) => (
-                        <div key={p.id} className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
-                            <div className="flex items-start gap-3">
-                                <Link
-                                    to={`/pets/${p.id}`}
-                                    className="block h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40"
-                                >
-                                    <div className="h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40">
-                                        {p.foto?.url ? (
-                                            <img src={p.foto.url} alt={p.nome} className="h-full w-full object-cover" />
-                                        ) : null}
+                        <Link
+                            key={p.id}
+                            to={`/pets/${p.id}`}
+                            className="group rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 hover:border-zinc-700"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/40">
+                                    {p.foto?.url ? (
+                                        <img src={p.foto.url} alt={p.nome} className="h-full w-full object-cover" />
+                                    ) : (
+                                        <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
+                                            Sem foto
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <div className="truncate text-base font-semibold text-zinc-50 group-hover:text-white">
+                                        {p.nome}
                                     </div>
 
-                                    <div className="min-w-0">
-                                        <div className="truncate text-base font-semibold">{p.nome}</div>
-                                        <div className="text=sm text-zinc-300">
-                                            {p.idade} anos
-                                        </div>
-                                        {p.tutorId ? <div className="text-xs text-zinc-400">Tutor: {p.tutorId}</div> : null}
+                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-300">
+                                        <span>{p.idade} anos</span>
+                                        {p.raca ? <span className="text-zinc-400">- {p.raca}</span> : null}
                                     </div>
-                                </Link>
+                                </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
