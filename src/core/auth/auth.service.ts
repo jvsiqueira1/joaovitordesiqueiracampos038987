@@ -53,7 +53,7 @@ export async function login(req: LoginRequest): Promise<TokenPair> {
 }
 
 export async function refresh(refreshToken: string): Promise<TokenPair> {
-    const res = await authHttp.post<unknown>("/autenticacao/refresh", null, {
+    const res = await authHttp.put<unknown>("/autenticacao/refresh", null, {
         headers: { Authorization: `Bearer ${refreshToken}` },
     },);
 

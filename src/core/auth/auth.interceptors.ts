@@ -7,13 +7,16 @@ import { toApiError } from "../api/apiError";
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 export function installAuthInterceptor(http: AxiosInstance, auth: AuthFacade): void {
-    http.interceptors.request.use((config) => {
-        const token = auth.getAccessToken();
-        if (!token) return config;
-
-        const headers = AxiosHeaders.from(config.headers);
-        headers.set("Authorization", `Bearer ${token}`);
-        config.headers = headers;
+    http.interceptors.request.use(async (config) => {
+        try {
+            const token =await auth.ensureFreshAccessToken();
+            const headers = AxiosHeaders.from(config.headers);
+            headers.set("Authorization", `Bearer ${token}`);
+            config.headers = headers;
+        } catch {
+            auth.logout();
+            return Promise.reject(toApiError(new Error("Sessão expirada.")));
+        }
 
         return config;
     });
