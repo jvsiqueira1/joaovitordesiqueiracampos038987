@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useObservable } from "@/shared/hooks/useObservable";
@@ -35,6 +36,13 @@ export default function PetsListPage() {
                     </p>
                 </div>
 
+                <Link
+                    to="/pets/new"
+                    className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900"
+                >
+                    Novo pet
+                </Link>
+
                 <div className="w-full sm:w-80">
                     <label className="block text-sm text-zinc-200">Buscar por nome</label>
                     <input className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ex: Bob" />
@@ -56,19 +64,24 @@ export default function PetsListPage() {
                     {state.items.map((p) => (
                         <div key={p.id} className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
                             <div className="flex items-start gap-3">
-                                <div className="h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40">
-                                    {p.foto?.url ? (
-                                        <img src={p.foto.url} alt={p.nome} className="h-full w-full object-cover" />
-                                    ) : null}
-                                </div>
-
-                                <div className="min-w-0">
-                                    <div className="truncate text-base font-semibold">{p.nome}</div>
-                                    <div className="text=sm text-zinc-300">
-                                        {p.idade} anos
+                                <Link
+                                    to={`/pets/${p.id}`}
+                                    className="block h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40"
+                                >
+                                    <div className="h-12 w-12 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950/40">
+                                        {p.foto?.url ? (
+                                            <img src={p.foto.url} alt={p.nome} className="h-full w-full object-cover" />
+                                        ) : null}
                                     </div>
-                                    {p.tutorId ? <div className="text-xs text-zinc-400">Tutor: {p.tutorId}</div> : null}
-                                </div>
+
+                                    <div className="min-w-0">
+                                        <div className="truncate text-base font-semibold">{p.nome}</div>
+                                        <div className="text=sm text-zinc-300">
+                                            {p.idade} anos
+                                        </div>
+                                        {p.tutorId ? <div className="text-xs text-zinc-400">Tutor: {p.tutorId}</div> : null}
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     ))}
