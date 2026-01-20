@@ -42,8 +42,8 @@ export function parsePage<T>(
     }
 
     if (isRecord(data) && Array.isArray(data["content"])) {
-        const total = asNumber(data["totalElements"]) ?? (data["content"] as unknown[]).length;
-        const page = asNumber(data["number"]) ?? req.page;
+        const total = asNumber(data["total"]) ?? (data["content"] as unknown[]).length;
+        const page = asNumber(data["page"]) ?? req.page;
         const size = asNumber(data["size"]) ?? req.size;
 
         return {

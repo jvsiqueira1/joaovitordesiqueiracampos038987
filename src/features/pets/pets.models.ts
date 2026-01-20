@@ -1,18 +1,23 @@
 export type PetId = string;
 
+export type PetPhoto = {
+    id: string;
+    nome: string;
+    contentType: string;
+    url: string;
+};
+
 export type Pet = {
     id: PetId;
     nome: string;
-    especie: string;
     idade: number;
     raca?: string;
     tutorId?: string;
-    fotoUrl?: string;
+    foto?: PetPhoto;
 }
 
 export type PetUpsertInput = {
     nome: string;
-    especie: string;
     idade: number;
     raca?: string;
 }
