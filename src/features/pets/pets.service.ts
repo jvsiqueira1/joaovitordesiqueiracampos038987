@@ -134,13 +134,11 @@ export async function deletePet(id: PetId): Promise<void> {
     await http.delete<unknown>(`/v1/pets/${id}`);
 }
 
-export async function uploadPetPhoto(id: PetId, file: File, fieldName: string = "file"): Promise<void> {
+export async function uploadPetPhoto(id: PetId, file: File, fieldName: string = "foto"): Promise<void> {
     const form = new FormData();
     form.append(fieldName, file);
 
-    await http.post(`/v1/pets/${id}/fotos`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+    await http.post(`/v1/pets/${id}/fotos`, form);
 }
 
 export async function removePetPhoto(id: PetId, fotoId: string): Promise<void> {
