@@ -52,6 +52,26 @@ export default function PetFormPage({ mode }: { mode: "create" | "edit" }) {
         }
     }
 
+    if (mode === "edit") {
+        if (loading && !initial) {
+            return <div className="text-zinc-300">Carregando...</div>
+        }
+
+        if (!loading && !initial) {
+            return (
+                <div className="space-y-3">
+                    <div className="rounded-md bortder border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">
+                        Não foi possível carregar os dados do pet.
+                    </div>
+
+                    <button className="text-sm text-zinc-300 hover:text-white" onClick={() => void nav(-1)}>
+                        Voltar
+                    </button>
+                </div>
+            )
+        }
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">

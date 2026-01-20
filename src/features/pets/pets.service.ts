@@ -9,8 +9,47 @@ import { parsePage } from "@/core/api/parsePage";
 const PETS_QUERY = {
     page: "page",
     size: "size",
-    seachByName: "nome",
+    searchByName: "nome",
 } as const;
+
+type PetsPageDto = {
+    page: number;
+    size: number;
+    total: number;
+    pageCount: number;
+    content: unknown[];
+}
+
+function isPetsPageDto(value: unknown): value is PetsPageDto {
+    if (!isRecord(value)) return false;
+
+    const page = asNumber(value["page"]);
+    const size = asNumber(value["size"]);
+    const total = asNumber(value["total"]);
+    const pageCount = asNumber(value["pageCount"]);
+    const content = value["content"];
+
+    return (
+        page !== undefined &&
+        size !== undefined &&
+        total !== undefined &&
+        pageCount !== undefined &&
+        Array.isArray(content)
+    )
+}
+
+export async function fetchPetsPage(page: number, size: number): Promise<{ pageCount: number; items: Pet[] }> {
+    const res = await http.get<unknown>("/v1/pets", { params: { page, size } });
+
+    if (!isPetsPageDto(res.data)) {
+        throw new ApiError("Resposta inválida ao listar pets.", { details: res.data });
+    }
+
+    return {
+        pageCount: res.data.pageCount,
+        items: res.data.content.map(toPet),
+    };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -103,7 +142,7 @@ export async function listPets(req: PageRequest): Promise<Page<Pet>> {
     };
 
     if (req.q && req.q.trim().length > 0) {
-        params[PETS_QUERY.seachByName] = req.q.trim();
+        params[PETS_QUERY.searchByName] = req.q.trim();
     }
 
     const res = await http.get<unknown>("/v1/pets", { params });

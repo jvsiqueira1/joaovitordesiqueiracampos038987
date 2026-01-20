@@ -2,7 +2,6 @@ import type { PetUpsertInput } from "../pets.models";
 
 import { useState } from "react";
 
-
 export default function PetForm({
     initial,
     loading,

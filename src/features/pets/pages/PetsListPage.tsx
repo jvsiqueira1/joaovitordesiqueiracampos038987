@@ -14,14 +14,16 @@ export default function PetsListPage() {
     const debounced = useDebounce(query, 300);
 
     useEffect(() => {
-        if (state.items.length === 0 && !state.loading && !state.error) {
-            void pets.load(0);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        void pets.load(0);
     }, [])
 
     useEffect(() => {
-        void pets.setQuery(debounced);
+        const q = debounced.trim();
+
+        if (q.length === 0 || q.length >= 2) {
+            void pets.setQuery(q);
+        }
+
     }, [debounced]);
 
     const totalPages = Math.max(1, Math.ceil(state.total / state.size));
