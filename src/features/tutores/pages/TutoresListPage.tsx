@@ -15,13 +15,11 @@ export default function TutoresListPage() {
 
   useEffect(() => {
     void tutores.load(0);
-  }, [])
+  }, []);
 
   useEffect(() => {
     const q = debounced.trim();
-    if (q.length === 0 || q.length >= 2) {
-      void tutores.setQuery(q);
-    }
+    if (q.length === 0 || q.length >= 2) void tutores.setQuery(q);
   }, [debounced]);
 
   const totalPages = Math.max(1, Math.ceil(state.total / state.size));
@@ -32,7 +30,7 @@ export default function TutoresListPage() {
         <div>
           <h1 className="text-2xl font-semibold">Tutores</h1>
           <p className="text-sm text-zinc-300">
-            Total: {state.total} - Página {state.page + 1} de {totalPages}
+            Total: {state.total} - Página: {state.page + 1} de {totalPages}
           </p>
         </div>
 
@@ -46,18 +44,20 @@ export default function TutoresListPage() {
               placeholder="Ex: João"
             />
           </div>
-
-          <Link
-            to="/tutores/new"
-            className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 flex items-center justify-center"
-          >
-            Novo Tutor
-          </Link>
         </div>
+
+        <Link
+          to="/tutores/new"
+          className="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 flex items-center justify-center"
+        >
+          Novo tutor
+        </Link>
       </div>
 
       {state.error && (
-        <div className="rounded-md border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200 ">{state.error}</div>
+        <div className="rounded-md border border-red-900/60 bg-red-950/30 p-3 text-sm text-red-200">
+          {state.error}
+        </div>
       )}
 
       {state.loading ? (
@@ -81,14 +81,21 @@ export default function TutoresListPage() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">sem foto</div>
+                    <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
+                      Sem foto
+                    </div>
                   )}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-base font-semibold text-zinc-50 group-hover:text-white">{t.nome}</div>
-                  <div className="text-sm text-zinc-300 truncate">{t.telefone}</div>
-                  {t.endereco ? <div className="text-xs text-zinc-400 truncate">{t.endereco}</div> : null}
+                  <div className="truncate text-base font-semibold text-zinc-50 group-hover:text-white">
+                    {t.nome}
+                  </div>
+
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-300">
+                    <span>{t.telefone}</span>
+                    {t.endereco ? <span className="text-zinc-400">- {t.endereco}</span> : null}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -104,7 +111,6 @@ export default function TutoresListPage() {
         >
           Anterior
         </button>
-
         <button
           className="rounded-md border border-zinc-800 px-3 py-2 text-sm disabled:opacity-50"
           disabled={state.loading || state.page >= totalPages - 1}
@@ -114,5 +120,5 @@ export default function TutoresListPage() {
         </button>
       </div>
     </div>
-  )
+  );
 }
