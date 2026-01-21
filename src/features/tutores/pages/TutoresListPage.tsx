@@ -36,12 +36,11 @@ export default function TutoresListPage() {
 
         <div className="flex w-full gap-3 sm:w-auto sm:items-end">
           <div className="w-full sm:w-80">
-            <label className="block text-sm text-zinc-200">Buscar por nome</label>
             <input
               className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ex: João"
+              placeholder="Buscar por nome"
             />
           </div>
         </div>
