@@ -15,6 +15,7 @@ export type Tutor = {
     endereco?: string;
     cpf?: string;
     foto?: TutorPhoto;
+    pets?: LinkedPet[];
 };
 
 export type TutorUpsertInput = {
@@ -23,4 +24,19 @@ export type TutorUpsertInput = {
     email?: string;
     endereco?: string;
     cpf?: string;
+}
+
+export type LinkedPetPhoto = {
+    id: string;
+    nome: string;
+    contentType: string;
+    url: string;
+}
+
+export type LinkedPet = {
+    id: string;
+    nome: string;
+    raca?: string;
+    idade: number;
+    foto?: LinkedPetPhoto;
 }

@@ -1,12 +1,12 @@
-import type { TutorUpsertInput } from "../tutores.models"
+import type { TutorUpsertInput } from "../tutores.models";
 
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { ApiError } from "@/core/api/apiError"
+import { ApiError } from "@/core/api/apiError";
 
-import TutorForm from "../components/TutorForm"
-import { createTutor, getTutorById, updateTutor } from "../tutores.service"
+import TutorForm from "../components/TutorForm";
+import { createTutor, getTutorById, updateTutor } from "../tutores.service";
 
 export default function TutorFormPage({ mode }: { mode: "create" | "edit" }) {
     const nav = useNavigate();

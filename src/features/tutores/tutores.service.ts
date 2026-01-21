@@ -1,4 +1,4 @@
-import type { Tutor, TutorId, TutorPhoto, TutorUpsertInput } from "./tutores.models";
+import type { LinkedPet, LinkedPetPhoto, Tutor, TutorId, TutorPhoto, TutorUpsertInput } from "./tutores.models";
 import type { AxiosResponse } from "axios";
 
 import { ApiError } from "@/core/api/apiError";
@@ -53,6 +53,8 @@ function toTutor(dto: unknown): Tutor {
     const id = asId(dto["id"]);
     const nome = asString(dto["nome"]);
     const telefone = asString(dto["telefone"]);
+    const petsRaw = dto["pets"];
+    const pets = Array.isArray(petsRaw) ? petsRaw.map(toLinkedPet).filter((p): p is LinkedPet => !!p) : undefined;
 
     if (!id || !nome || !telefone) {
         throw new ApiError("Resposta inválida: Tutor sem campos obrigatórios (id/nome/telefone).", { details: dto});
@@ -70,7 +72,38 @@ function toTutor(dto: unknown): Tutor {
         endereco: asString(dto["endereco"]),
         cpf,
         foto: toPhoto(dto["foto"]),
+        pets,
     };
+}
+
+function toLinkedPetPhoto(value: unknown): LinkedPetPhoto | undefined {
+    if (!isRecord(value)) return undefined;
+
+    const id = asId(value["id"]);
+    const nome = asString(value["nome"]);
+    const contentType = asString(value["contentType"]);
+    const url = asString(value["url"]);
+
+    if (!id || !nome || !contentType || !url) return undefined;
+    return { id, nome, contentType, url};
+}
+
+function toLinkedPet(value: unknown): LinkedPet | undefined {
+    if (!isRecord(value)) return undefined;
+
+    const id = asId(value["id"]);
+    const nome = asString(value["nome"]);
+    const idade = typeof value["idade"] === "number" && Number.isFinite(value["idade"]) ? value["idade"] : undefined;
+
+    if (!id || !nome || idade === undefined) return undefined;
+
+    return {
+        id,
+        nome,
+        idade,
+        raca: asString(value["raca"]),
+        foto: toLinkedPetPhoto(value["foto"]),
+    }
 }
 
 type HeadersLike = Record<string, string | string[] | undefined>;
