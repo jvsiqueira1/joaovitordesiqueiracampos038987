@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "@/core/auth/ProtectedRoute";
+import HealthPage from "@/core/health/HealthPage";
 import LoginPage from "@/features/auth/LoginPage";
 
 import AppShell from "./AppShell";
@@ -17,16 +18,17 @@ export default function AppRoutes() {
     return (
         <Suspense fallback={<Loader />}>
             <Routes>
-                <Route path="/login" element={<LoginPage />}/>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/health" element={<HealthPage />} />
 
                 <Route element={
                     <ProtectedRoute>
                         <AppShell />
                     </ProtectedRoute>
                 }>
-                    <Route index element={<Navigate to={"/pets"}/>} />
-                    <Route path="/pets/*" element={<PetsModule />}/>
-                    <Route path="/tutores/*" element={<TutoresModule />}/>
+                    <Route index element={<Navigate to={"/pets"} />} />
+                    <Route path="/pets/*" element={<PetsModule />} />
+                    <Route path="/tutores/*" element={<TutoresModule />} />
                 </Route>
 
                 <Route path="*" element={<div className="text-zinc-300 text-center py-10">404 - Página não encontrada</div>} />
