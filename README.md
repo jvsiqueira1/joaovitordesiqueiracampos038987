@@ -8,6 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?style=flat-square&logo=vitest&logoColor=white)
 
 </div>
 
@@ -18,6 +19,7 @@
 - [Features](#features)
 - [Quick Start](#quick-start)
 - [Scripts](#scripts)
+- [Testes](#testes)
 - [Docker](#docker)
 - [Health Check](#health-check)
 - [Arquitetura](#arquitetura)
@@ -32,6 +34,7 @@
 - [x] **Pets** — CRUD completo, upload/remoção de foto, listagem paginada e busca
 - [x] **Tutores** — CRUD completo, upload/remoção de foto, vínculo com pets
 - [x] Lazy loading por módulos
+- [x] Testes unitários (Vitest + Testing Library)
 - [x] Docker multi-stage (Node + Nginx)
 - [x] Health page com liveness/readiness
 
@@ -77,6 +80,24 @@ Acesse: http://localhost:5173
 | `npm run lint` | Verificar lint |
 | `npm run lint:fix` | Corrigir lint |
 | `npm run format` | Formatar com Prettier |
+| `npm run test` | Executar testes (watch) |
+| `npm run test:run` | Executar testes (única vez) |
+
+---
+
+## Testes
+
+Stack: **Vitest** + **Testing Library**
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run test` | Modo watch |
+| `npm run test:run` | Execução única |
+
+Cobertura:
+- `core/auth/` — AuthFacade
+- `features/pets/` — PetsFacade, PetForm
+- `features/tutores/` — TutoresFacade
 
 ---
 
