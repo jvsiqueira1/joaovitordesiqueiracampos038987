@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
+import { InlineError } from "@/shared/ui/feedback/Feedback";
 
 import TutorForm from "../components/TutorForm";
 import { createTutor, getTutorById, updateTutor } from "../tutores.service";
@@ -83,7 +84,7 @@ export default function TutorFormPage({ mode }: { mode: "create" | "edit" }) {
             </div>
 
             {error && (
-                <div className="rounded-md border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">{error}</div>
+                <InlineError message={error} />
             )}
 
             <TutorForm initial={initial} loading={loading} onSubmit={(d) => void handleSubmit(d)} />

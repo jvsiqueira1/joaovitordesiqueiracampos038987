@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useObservable } from "@/shared/hooks/useObservable";
+import { EmptyState, InlineError, LoadingText } from "@/shared/ui/feedback/Feedback";
 import PageHeader from "@/shared/ui/page-header/PageHeader";
 
 import PetCard from "../components/PetCard";
@@ -54,15 +55,13 @@ export default function PetsListPage() {
             />
 
             {state.error && (
-                <div className="rounded-md border border-red-900/60 bg-red-950/30 p-3 text-sm text-red-200">
-                    {state.error}
-                </div>
+                <InlineError message={state.error} />
             )}
 
             {state.loading ? (
-                <div className="text-zinc-300">Carregando...</div>
+                <LoadingText />
             ) : state.items.length === 0 ? (
-                <div className="text-zinc-300">Nenhum pet encontrado.</div>
+                <EmptyState message="Nenhum pet encontrado." />
             ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {state.items.map((p) => (
