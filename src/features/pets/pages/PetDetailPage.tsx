@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
 import ConfirmDialog from "@/shared/ui/confirm/ConfirmDialog";
+import { InlineError, LoadingText } from "@/shared/ui/feedback/Feedback";
 import PhotoSection from "@/shared/ui/photo-section/PhotoSection";
 
 import { deletePet, getPetById, removePetPhoto, uploadPetPhoto } from "../pets.service";
@@ -99,12 +100,12 @@ export default function PetDetailPage() {
         }
     }
 
-    if (loading) return <div className="text-zinc-300">Carregando...</div>;
+    if (loading) return <LoadingText />;
 
     if (error) {
         return (
             <div className="space-y-3">
-                <div className="rounded-md border border-red-900/60 bg-red-950/30 p-3 text-sm text-red-200">{error}</div>
+                <InlineError message={error} />
                 <button className="text-sm text-zinc-300 hover:text-white" onClick={() => void nav(-1)}>
                     Voltar
                 </button>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
 import { auth } from "@/core/auth/auth.instance";
+import { InlineError } from "@/shared/ui/feedback/Feedback";
 
 export default function LoginPage() {
     const nav = useNavigate();
@@ -60,7 +61,7 @@ export default function LoginPage() {
                         />
                     </label>
 
-                    {error && <div className="text-sm text-red-300">{error}</div>}
+                    {error && <InlineError message={error} />}
 
                     <button disabled={loading} className="w-full rounded-md bg-zinc-100 text-zinc-900 py-2 font-medium disabled:opacity-60">{loading ? "Entrando..." : "Entrar"}</button>
                 </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
+import { InlineError, LoadingText } from "@/shared/ui/feedback/Feedback";
 
 import PetForm from "../components/PetForm";
 import { createPet, getPetById, updatePet } from "../pets.service";
@@ -54,15 +55,13 @@ export default function PetFormPage({ mode }: { mode: "create" | "edit" }) {
 
     if (mode === "edit") {
         if (loading && !initial) {
-            return <div className="text-zinc-300">Carregando...</div>
+            return <LoadingText />
         }
 
         if (!loading && !initial) {
             return (
                 <div className="space-y-3">
-                    <div className="rounded-md bortder border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">
-                        Não foi possível carregar os dados do pet.
-                    </div>
+                    <InlineError message="Não foi possível carregar os dados do pet." />
 
                     <button className="text-sm text-zinc-300 hover:text-white" onClick={() => void nav(-1)}>
                         Voltar
@@ -82,7 +81,7 @@ export default function PetFormPage({ mode }: { mode: "create" | "edit" }) {
             </div>
 
             {error && (
-                <div className="rounded-md border border-red-900/50 bg-red-950/30 p-3 text-sm text-red-200">{error}</div>
+                <InlineError message={error} />
             )}
 
             <PetForm initial={initial} loading={loading} onSubmit={(d) => void handleSubmit(d)} />

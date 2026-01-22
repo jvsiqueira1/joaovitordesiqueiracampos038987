@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "@/core/auth/ProtectedRoute";
 import HealthPage from "@/core/health/HealthPage";
 import LoginPage from "@/features/auth/LoginPage";
+import { LoadingText } from "@/shared/ui/feedback/Feedback";
 
 import AppShell from "./AppShell";
 
@@ -11,7 +12,7 @@ const PetsModule = lazy(() => import("../features/pets/PetsModule"));
 const TutoresModule = lazy(() => import("../features/tutores/TutoresModule"));
 
 function Loader() {
-    return <div className="text-zinc-300">Carregando...</div>
+    return <LoadingText />;
 }
 
 export default function AppRoutes() {
