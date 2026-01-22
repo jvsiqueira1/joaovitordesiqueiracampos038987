@@ -52,12 +52,17 @@ export async function login(req: LoginRequest): Promise<TokenPair> {
 }
 
 export async function refresh(refreshToken: string): Promise<TokenPair> {
-  const res = await authHttp.put<unknown>("/autenticacao/refresh", null, {
-    headers: { Authorization: `Bearer ${refreshToken}` },
+  const res = await authHttp.request<unknown>({
+    method: "PUT",
+    url: "/autenticacao/refresh",
+    headers: {
+      Authorization: `Bearer ${refreshToken}`,
+      "Content-Type": undefined,
+    },
   });
 
   if (!isTokenResponseDto(res.data)) {
-    throw new ApiError("Resposta inválida do refresh.", { details: res.data });
+    throw new ApiError("Resposta inválida ao renovar token.", { details: res.data });
   }
 
   return toTokenPair(res.data);

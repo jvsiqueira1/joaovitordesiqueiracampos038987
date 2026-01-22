@@ -29,6 +29,8 @@ export default function TutorForm({
     const [endereco, setEndereco] = useState(initial?.endereco ?? "");
     const [cpf, setCpf] = useState(initial?.cpf ?? "");
 
+    const maskedCpf = cpf.replace(/\D/g, "").slice(0, 11).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+
     function submit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -87,7 +89,7 @@ export default function TutorForm({
                 <span className="text-sm text-zinc-200">CPF</span>
                 <input
                     className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none"
-                    value={cpf}
+                    value={maskedCpf}
                     onChange={(e) => setCpf(e.target.value)}
                     inputMode="numeric"
                     placeholder="Somente números"

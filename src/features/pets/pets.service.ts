@@ -156,7 +156,15 @@ export async function listPets(req: PageRequest): Promise<Page<Pet>> {
 
   return {
     ...pageUnknown,
-    items: pageUnknown.items.map(toPet),
+    items: pageUnknown.items
+      .map((x) => {
+        try {
+          return toPet(x);
+        } catch {
+          return null;
+        }
+      })
+      .filter((p): p is Pet => p !== null),
   };
 }
 

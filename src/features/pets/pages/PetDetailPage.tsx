@@ -4,14 +4,23 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
+import ConfirmDialog from "@/shared/ui/confirm/ConfirmDialog";
+import PhotoSection from "@/shared/ui/photo-section/PhotoSection";
 
 import { deletePet, getPetById, removePetPhoto, uploadPetPhoto } from "../pets.service";
+
+
+type confirmAction = "delete" | "removePhoto" | null;
 
 export default function PetDetailPage() {
     const { id } = useParams<{ id: string }>();
     const nav = useNavigate();
 
     const [pet, setPet] = useState<Pet | null>(null);
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<confirmAction>(null);
+
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -35,26 +44,48 @@ export default function PetDetailPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    async function onDelete(): Promise<void> {
+    function openDeleteConfirm() {
+        setConfirmAction("delete");
+        setConfirmOpen(true);
+    }
+
+    function openRemovePhotoConfirm() {
+        setConfirmAction("removePhoto");
+        setConfirmOpen(true);
+    }
+
+    async function onConfirm(): Promise<void> {
         if (!id) return;
-        const ok = window.confirm("Tem certeza que deseja deletar este pet?");
-        if (!ok) return;
+
+        setConfirmOpen(false);
 
         setActionLoading(true);
         setError(null);
 
         try {
-            await deletePet(id);
-            void nav("/pets", { replace: true });
+            if (confirmAction === "delete") {
+                await deletePet(id);
+                void nav("/pets", { replace: true });
+                return;
+            }
+
+            if (confirmAction === "removePhoto") {
+                if (!pet?.foto?.id) return;
+                await removePetPhoto(id, pet.foto.id);
+                await load();
+                return;
+            }
         } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao deletar.")
+            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao executar ação.")
         } finally {
             setActionLoading(false);
+            setConfirmAction(null);
         }
     }
 
     async function onUpload(file: File): Promise<void> {
         if (!id) return;
+
         setActionLoading(true);
         setError(null);
 
@@ -63,24 +94,6 @@ export default function PetDetailPage() {
             await load();
         } catch (err: unknown) {
             setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao enviar foto.");
-        } finally {
-            setActionLoading(false);
-        }
-    }
-
-    async function onRemovePhoto(): Promise<void> {
-        if (!id || !pet?.foto?.id) return;
-        const ok = window.confirm("Tem certeza que deseja remover esta foto?");
-        if (!ok) return;
-
-        setActionLoading(true);
-        setError(null);
-
-        try {
-            await removePetPhoto(id, pet.foto.id);
-            await load();
-        } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao remover foto.")
         } finally {
             setActionLoading(false);
         }
@@ -100,6 +113,9 @@ export default function PetDetailPage() {
     }
 
     if (!pet) return <div className="text-zinc-300">Pet não encontrado.</div>;
+
+    const confirmTitle = confirmAction === "delete" ? "Excluir pet" : "Remover foto";
+    const confirmDescription = confirmAction === "delete" ? "Tem certeza que deseja excluir este pet? Essa ação não pode ser desfeita." : "Tem certeza que deseja remover a foto atual?";
 
     return (
         <div className="space-y-4">
@@ -122,49 +138,35 @@ export default function PetDetailPage() {
                     <button
                         disabled={actionLoading}
                         className="rounded-md border border-red-900/60 bg-red-950/30 px-3 py-2 text-sm text-red-200 disabled:opacity-60"
-                        onClick={() => void onDelete()}
+                        onClick={openDeleteConfirm}
                     >
                         Excluir
                     </button>
                 </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
-                <div className="text-sm font-medium">Foto</div>
+            <PhotoSection
+                title="Foto"
+                imageAlt={pet.nome}
+                imageUrl={pet.foto?.url}
+                disabled={actionLoading}
+                onUpload={(file) => void onUpload(file)}
+                onRemove={openRemovePhotoConfirm}
+                showRemove={!!pet.foto?.id}
+            />
 
-                <div className="flex items-center gap-4">
-                    <div className="h-28 w-28 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/40">
-                        {pet.foto?.url ? <img src={pet.foto.url} alt={pet.nome} className="h-full w-full object-cover" /> : null}
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="block">
-                            <span className="text-sm text-zinc-200">Enviar uma foto</span>
-                            <input
-                                className="mt-1 block w-full text-sm text-zinc-300"
-                                type="file"
-                                accept="image/*"
-                                disabled={actionLoading}
-                                onChange={(e) => {
-                                    const f = e.target.files?.[0];
-                                    if (f) void onUpload(f);
-                                    e.currentTarget.value = "";
-                                }}
-                            />
-                        </label>
-
-                        {pet.foto?.id ? (
-                            <button
-                                disabled={actionLoading}
-                                className="rounded-md border border-zinc-800 px-3 py-2 text-sm disabled:opacity-60"
-                                onClick={() => void onRemovePhoto()}
-                            >
-                                Remover foto
-                            </button>
-                        ) : null}
-                    </div>
-                </div>
-            </div>
+            <ConfirmDialog
+                open={confirmOpen}
+                title={confirmTitle}
+                description={confirmDescription}
+                danger
+                loading={actionLoading}
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setConfirmAction(null);
+                }}
+                onConfirm={() => void onConfirm()}
+            />
         </div>
-    )
+    );
 }

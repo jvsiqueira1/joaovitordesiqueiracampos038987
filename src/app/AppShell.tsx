@@ -2,7 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
     [
-        "rouded-md px-3 py-2 text-sm font-medium",
+        "rounded-md px-3 py-2 text-sm font-medium",
         isActive ? "bg-zinc-800 text-white" : "text-zinc-300 hover:bg-zinc-900 hover:text-white",
     ].join(" ");
 
