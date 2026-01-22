@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { ApiError } from "@/core/api/apiError";
+import ConfirmDialog from "@/shared/ui/confirm/ConfirmDialog";
+import PhotoSection from "@/shared/ui/photo-section/PhotoSection";
 
 import {
     deleteTutor,
@@ -14,15 +16,24 @@ import {
     uploadTutorPhoto,
 } from "../tutores.service";
 
+
+type ConfirmAction = "deleteTutor" | "removeTutorPhoto" | "unlinkPet" | null;
+
 export default function TutorDetailPage() {
     const { id } = useParams<{ id: string }>();
     const nav = useNavigate();
 
     const [tutor, setTutor] = useState<Tutor | null>(null);
     const [petIdInput, setPetIdInput] = useState("");
+
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+    const [confirmPetId, setConfirmPetId] = useState<string | null>(null);
+
     async function load(): Promise<void> {
         if (!id) return;
 
@@ -44,22 +55,58 @@ export default function TutorDetailPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    async function onDelete(): Promise<void> {
+    function openDeleteConfirm() {
+        setConfirmAction("deleteTutor");
+        setConfirmPetId(null);
+        setConfirmOpen(true);
+    }
+
+    function openRemovePhotoConfirm() {
+        setConfirmAction("removeTutorPhoto");
+        setConfirmPetId(null);
+        setConfirmOpen(true);
+    }
+
+    function openUnlinkConfirm(petId: string) {
+        setConfirmAction("unlinkPet");
+        setConfirmPetId(petId);
+        setConfirmOpen(true);
+    }
+
+    async function onConfirm(): Promise<void> {
         if (!id) return;
 
-        const ok = window.confirm("Tem certeza que deseja excluir este tutor?");
-        if (!ok) return;
+        setConfirmOpen(false);
 
         setActionLoading(true);
         setError(null);
 
         try {
-            await deleteTutor(id);
-            void nav("/tutores", { replace: true });
+            if (confirmAction === "deleteTutor") {
+                await deleteTutor(id);
+                void nav("/tutores", { replace: true });
+                return;
+            }
+
+            if (confirmAction === "removeTutorPhoto") {
+                if (!tutor?.foto?.id) return;
+                await removeTutorPhoto(id, tutor.foto.id);
+                await load();
+                return;
+            }
+
+            if (confirmAction === "unlinkPet") {
+                if (!confirmPetId) return;
+                await unlinkPetFromTutor(id, confirmPetId);
+                await load();
+                return;
+            }
         } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao excluir tutor.");
+            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao executar ação.");
         } finally {
             setActionLoading(false);
+            setConfirmAction(null);
+            setConfirmPetId(null);
         }
     }
 
@@ -74,25 +121,6 @@ export default function TutorDetailPage() {
             await load();
         } catch (err: unknown) {
             setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao enviar foto.");
-        } finally {
-            setActionLoading(false);
-        }
-    }
-
-    async function onRemovePhoto(): Promise<void> {
-        if (!id || !tutor?.foto?.id) return;
-
-        const ok = window.confirm("Remover a foto atual?");
-        if (!ok) return;
-
-        setActionLoading(true);
-        setError(null);
-
-        try {
-            await removeTutorPhoto(id, tutor.foto.id);
-            await load();
-        } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao remover foto.");
         } finally {
             setActionLoading(false);
         }
@@ -118,25 +146,6 @@ export default function TutorDetailPage() {
         }
     }
 
-    async function onUnlinkPet(petId: string): Promise<void> {
-        if (!id) return;
-
-        const ok = window.confirm("Remover o vínculo deste pet com o tutor?");
-        if (!ok) return;
-
-        setActionLoading(true);
-        setError(null);
-
-        try {
-            await unlinkPetFromTutor(id, petId);
-            await load();
-        } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Erro ao remover vínculo.");
-        } finally {
-            setActionLoading(false);
-        }
-    }
-
     if (loading) return <div className="text-zinc-300">Carregando...</div>;
 
     if (error) {
@@ -152,15 +161,24 @@ export default function TutorDetailPage() {
 
     if (!tutor) return <div className="text-zinc-300">Tutor não encontrado.</div>;
 
+    const confirmTitle = confirmAction === "deleteTutor" ? "Excluir tutor" : confirmAction === "removeTutorPhoto" ? "Remover foto" : "Desvincular pet";
+
+    const confirmDescription =
+        confirmAction === "deleteTutor" ? "Tem certeza que deseja excluir este tutor? Essa ação não pode ser desfeita."
+            : confirmAction === "removeTutorPhoto" ? "Tem certeza que deseja remover a foto atual?"
+                : "Tem certeza que deseja remover o vínculo deste pet com o tutor?";
+
+    const maskedCpf = tutor.cpf ? tutor?.cpf.replace(/\D/g, "").slice(0, 11).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4") : "";
+
     return (
         <div className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold">{tutor.nome}</h1>
-                    <p className="text-sm text-zinc-300">{tutor.telefone}</p>
+                    <p className="text-sm text-zinc-300">Telefone: {tutor.telefone}</p>
                     {tutor.email ? <p className="text-xs text-zinc-400">Email: {tutor.email}</p> : null}
                     {tutor.endereco ? <p className="text-xs text-zinc-400">Endereço: {tutor.endereco}</p> : null}
-                    {tutor.cpf ? <p className="text-xs text-zinc-400">CPF: {tutor.cpf}</p> : null}
+                    {tutor.cpf ? <p className="text-xs text-zinc-400">CPF: {maskedCpf}</p> : null}
                 </div>
 
                 <div className="flex w-full gap-2 sm:w-auto">
@@ -174,55 +192,22 @@ export default function TutorDetailPage() {
                     <button
                         disabled={actionLoading}
                         className="flex-1 rounded-md border border-red-900/60 bg-red-950/30 px-3 py-2 text-sm text-red-200 disabled:opacity-60 sm:flex-none"
-                        onClick={() => void onDelete()}
+                        onClick={openDeleteConfirm}
                     >
                         Excluir
                     </button>
                 </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
-                <div className="text-sm font-medium">Foto</div>
-
-                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-start">
-                    <div className="h-28 w-28 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/40">
-                        {tutor.foto?.url ? (
-                            <img
-                                src={tutor.foto.url}
-                                alt={tutor.nome}
-                                className="h-full w-full object-cover"
-                            />
-                        ) : null}
-                    </div>
-
-                    <div className="space-y-2 sm:w-auto">
-                        <label className="block">
-                            <span className="text-sm text-zinc-200">Enviar nova foto</span>
-                            <input
-                                className="mt-1 block w-full text-sm text-zinc-300"
-                                type="file"
-                                accept="image/*"
-                                disabled={actionLoading}
-                                onChange={(e) => {
-                                    const f = e.target.files?.[0];
-                                    if (f) void onUpload(f);
-                                    e.currentTarget.value = "";
-                                }}
-                            />
-                        </label>
-
-                        {tutor.foto?.id ? (
-                            <button
-                                disabled={actionLoading}
-                                className="rounded-md border border-zinc-800 px-3 py-2 text-sm disabled:opacity-60"
-                                onClick={() => void onRemovePhoto()}
-                            >
-                                Remover foto
-                            </button>
-                        ) : null}
-                    </div>
-                </div>
-            </div>
+            <PhotoSection
+                title="Foto"
+                imageAlt={tutor.nome}
+                imageUrl={tutor.foto?.url}
+                disabled={actionLoading}
+                onUpload={(file) => void onUpload(file)}
+                onRemove={openRemovePhotoConfirm}
+                showRemove={!!tutor.foto?.id}
+            />
 
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -280,7 +265,7 @@ export default function TutorDetailPage() {
                                     <button
                                         disabled={actionLoading}
                                         className="rounded-md border border-zinc-800 px-2 py-1 text-xs disabled:opacity-60"
-                                        onClick={() => void onUnlinkPet(p.id)}
+                                        onClick={() => openUnlinkConfirm(p.id)}
                                     >
                                         Remover
                                     </button>
@@ -292,6 +277,20 @@ export default function TutorDetailPage() {
                     <div className="text-sm text-zinc-300">Nenhum pet vinculado.</div>
                 )}
             </div>
+
+            <ConfirmDialog
+                open={confirmOpen}
+                title={confirmTitle}
+                description={confirmDescription}
+                danger
+                loading={actionLoading}
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setConfirmAction(null);
+                    setConfirmPetId(null);
+                }}
+                onConfirm={() => void onConfirm()}
+            />
         </div>
     );
 }
