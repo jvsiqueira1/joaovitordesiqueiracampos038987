@@ -181,7 +181,6 @@ export default function TutorDetailPage() {
                 </div>
             </div>
 
-            {/* Foto igual ao PetDetail */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
                 <div className="text-sm font-medium">Foto</div>
 
@@ -225,7 +224,6 @@ export default function TutorDetailPage() {
                 </div>
             </div>
 
-            {/* Pets vinculados no mesmo estilo */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>

@@ -1,16 +1,16 @@
 export type LoginRequest = {
-    username: string;
-    password: string;
-}
+  username: string;
+  password: string;
+};
 
 export type TokenPair = {
-    accessToken: string;
-    refreshToken: string;
-    accessExpiresAt: number;
-    refreshExpiresAt: number;
-}
+  accessToken: string;
+  refreshToken: string;
+  accessExpiresAt: number;
+  refreshExpiresAt: number;
+};
 
 export type AuthState = {
-    status: "anonymous" | "authenticated";
-    tokens?: TokenPair;
-}
+  status: "anonymous" | "authenticated";
+  tokens?: TokenPair;
+};

@@ -42,11 +42,22 @@ export default function LoginPage() {
                 <div className="mt-5 space-y-3">
                     <label className="block">
                         <span className="text-sm text-zinc-200">Usuário</span>
-                        <input className="mt-1 w-full rouded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username"/>
+                        <input
+                            className="mt-1 w-full rounded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            autoComplete="username"
+                        />
                     </label>
                     <label className="block">
                         <span className="text-sm text-zinc-200">Senha</span>
-                        <input className="mt-1 w-full rouded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="username"/>
+                        <input
+                            className="mt-1 w-full rouded-md bg-zinc-950/60 border border-zinc-800 px-3 py-2 outline-none"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="username"
+                            type="password"
+                        />
                     </label>
 
                     {error && <div className="text-sm text-red-300">{error}</div>}
