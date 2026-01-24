@@ -97,7 +97,7 @@ Stack: **Vitest** + **Testing Library**
 Cobertura:
 - `core/auth/` — AuthFacade
 - `features/pets/` — PetsFacade, PetForm
-- `features/tutores/` — TutoresFacade
+- `features/tutores/` — TutoresFacade, TutorForm
 
 ---
 
